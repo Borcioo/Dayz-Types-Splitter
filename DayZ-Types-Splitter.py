@@ -121,5 +121,9 @@ class Application(tk.Frame):
         self.cancel_button["text"] = "Close"
 
 root = tk.Tk()
+try:
+    root.iconbitmap('xml.ico')
+except:
+    pass
 app = Application(master=root)
 app.mainloop()
