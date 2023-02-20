@@ -28,3 +28,11 @@ python C_to_Json_Spawn_Points.py
 ```
 
 and that's it, in the json folder will be all the files you have converted ^^
+
+you can now copy json to server files and add them to cfggameplay
+
+```
+    "objectSpawnersArr": [
+      "xxx.json",
+    ],
+```
