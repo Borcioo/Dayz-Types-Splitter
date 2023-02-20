@@ -8,6 +8,8 @@ python DayZ-Types-Splitter.py
 
 # Dayz-C to Json SpawnObject convert script (only script no exe)
 
+https://www.youtube.com/watch?v=PsFPHqpMoMM
+
 python 3 necessary
 
 if you want to convert c to json clone repo and unpack it
