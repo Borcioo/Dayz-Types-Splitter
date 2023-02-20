@@ -19,7 +19,7 @@ in folder:
 files_to_convert(folder)
 ```
 
-go files with extension .c (see example file in folder, you can vonver multiply files at once)
+go files with extension .c (see example file in folder, you can conver multiply files at once)
 
 next run
 
