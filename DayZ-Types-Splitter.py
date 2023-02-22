@@ -47,7 +47,7 @@ class Application(tk.Frame):
         self.output_label.grid(row=1, column=1, columnspan=2, sticky="nsew")
 
         # Create a label to display the program status (running, finished, etc.)
-        self.status_label = tk.Label(self, width=100, height=2, borderwidth=1, relief="solid", background="white", text="Status: waiting for inputs till then run button is disabled")
+        self.status_label = tk.Label(self, width=100, height=2, borderwidth=1, relief="solid", background="white", text="Status: Waiting for inputs till then run button is disabled")
         self.status_label.grid(row=3, column=0, columnspan=3, sticky="nsew")
 
         # Make the buttons fill the entire space of the cell
@@ -55,8 +55,8 @@ class Application(tk.Frame):
             child.grid(padx=10, pady=10)
 
     def select_input_file(self):
-        # Open a file dialog to select the input file
-        self.input_file = filedialog.askopenfilename()
+        # Open a file dialog to select the input file, only display xml 
+        self.input_file = filedialog.askopenfilename(filetypes=[("XML files", "*.xml")])
         self.input_label["text"] = f"Input file: {self.input_file}"
         self.check_inputs()
 
@@ -68,10 +68,10 @@ class Application(tk.Frame):
 
     def check_inputs(self):
         if self.input_file and self.output_directory:
-            self.status_label["text"] = "Status: ready to run"
-            self.run_button["state"] = "normal"
+            self.status_label["text"] = "Status: Ready to run"
+            self.run_button["state"] = "Normal"
         else:
-            self.status_label["text"] = "Status: waiting for inputs till then run button is disabled"
+            self.status_label["text"] = "Status: Waiting for inputs till then run button is disabled"
             self.run_button["state"] = "disabled"
 
     def cancel_program(self):
