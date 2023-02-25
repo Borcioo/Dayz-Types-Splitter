@@ -34,9 +34,9 @@ class Application(tk.Frame):
         self.run_button = tk.Button(self, text="Run", bg="#444654", fg="white", state="disabled", disabledforeground="red", command=self.run_program)
         self.run_button.grid(row=2, column=1, sticky="nsew")
 
-        # Create a button to cancel the program
-        self.cancel_button = tk.Button(self, text="Cancel", bg="#444654", fg="white", command=self.cancel_program)
-        self.cancel_button.grid(row=2, column=0, sticky="nsew")
+        # Create a button to Close the program
+        self.close_button = tk.Button(self, text="Close", bg="#444654", fg="white", command=self.close_program)
+        self.close_button.grid(row=2, column=0, sticky="nsew")
 
         # Create a label to display selected input file path
         self.input_label = tk.Label(self, width=100, height=2, borderwidth=1, relief="solid", background="white")
@@ -50,9 +50,24 @@ class Application(tk.Frame):
         self.status_label = tk.Label(self, width=100, height=2, borderwidth=1, relief="solid", background="white", text="Status: Waiting for inputs till then run button is disabled")
         self.status_label.grid(row=3, column=0, columnspan=3, sticky="nsew")
 
+        #Create a button in the top left to open to a new grid with the instructions
+        self.instructions_button = tk.Button(self, text="Instructions", bg="#444654", fg="white", command=self.instructions)
+        self.instructions_button.grid(row=0, column=2, sticky="nsew")
+    
         # Make the buttons fill the entire space of the cell
         for child in self.winfo_children():
             child.grid(padx=10, pady=10)
+
+    def instructions(self):
+        self.instructions_window = tk.Toplevel(self.master)
+        self.instructions_window.title("Instructions")
+        self.instructions_window.minsize(500, 200)
+        self.instructions_window.resizable(False, False)
+        self.instructions_window.configure(background="#202123")
+        self.instructions_label = tk.Label(self.instructions_window, text="1. Select the input file (types.xml) \n2. Select the output directory \n3. Click run \n4. Wait for the program to finish \n5. Enjoy your split types!", bg="#202123", fg="white", justify="center", wraplength=500)
+        self.instructions_label.grid(row=1, column=1, sticky="nsew")
+        self.instructions_window.grid_columnconfigure(0, weight=1)
+        self.instructions_label.pack()
 
     def select_input_file(self):
         # Open a file dialog to select the input file, only display xml 
@@ -69,15 +84,17 @@ class Application(tk.Frame):
     def check_inputs(self):
         if self.input_file and self.output_directory:
             self.status_label["text"] = "Status: Ready to run"
-            self.run_button["state"] = "Normal"
+            self.run_button["state"] = "normal"
         else:
             self.status_label["text"] = "Status: Waiting for inputs till then run button is disabled"
             self.run_button["state"] = "disabled"
 
-    def cancel_program(self):
-        # Ask the user if they want to cancel the program
-        if messagebox.askokcancel("Cancel", "Are you sure you want to cancel the program?"):
+    def close_program(self):
+        # Ask the user if they want to close the program
+        if messagebox.askokclose("Close", "Are you sure you want to close the program?"):
             self.master.destroy()
+
+    
 
     def run_program(self):
 
@@ -118,7 +135,7 @@ class Application(tk.Frame):
                 f.write(xml_declaration + xml_string)
 
         self.status_label["text"] = "Status: finished"
-        self.cancel_button["text"] = "Close"
+        self.close_button["text"] = "Close"
 
 root = tk.Tk()
 try:
