@@ -96,13 +96,25 @@ jobs:
             - Checksums: `SHA256SUMS.txt`
             - Provenance: `gh attestation verify DayZ-Types-Splitter.exe --repo ${{ github.repository }}`
 
-      # Optional: scans the exe and appends VirusTotal links to the release body.
-      # Must run AFTER the release exists, or softprops overwrites the appended links.
-      # Add a free API key as the VT_API_KEY repo secret to enable.
+      # Optional: scans the exe on VirusTotal. Enabled by the VT_API_KEY repo
+      # secret (free key). The action's own update_release_body only works on
+      # `release` events — we trigger on tag push, so we append the link ourselves.
       - name: VirusTotal scan
+        id: vt
         if: env.HAS_VT_KEY == 'true'
         uses: crazy-max/ghaction-virustotal@v4
         with:
           vt_api_key: ${{ secrets.VT_API_KEY }}
           files: DayZ-Types-Splitter.exe
-          update_release_body: true
+
+      - name: Append VirusTotal link to release body
+        if: env.HAS_VT_KEY == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ANALYSIS: ${{ steps.vt.outputs.analysis }}
+        run: |
+          url="${ANALYSIS#*=}"
+          {
+            gh release view "$GITHUB_REF_NAME" --json body --jq .body
+            printf '\n**VirusTotal scan:** %s\n' "$url"
+          } | gh release edit "$GITHUB_REF_NAME" --notes-file -
