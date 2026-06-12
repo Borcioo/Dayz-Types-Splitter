@@ -81,16 +81,6 @@ jobs:
             DayZ-Types-Splitter.exe
             DayZ-Types-Splitter-linux-x64.tar.gz
 
-      # Optional: scans the exe and appends VirusTotal links to the release.
-      # Add a free API key as the VT_API_KEY repo secret to enable.
-      - name: VirusTotal scan
-        if: env.HAS_VT_KEY == 'true'
-        uses: crazy-max/ghaction-virustotal@v4
-        with:
-          vt_api_key: ${{ secrets.VT_API_KEY }}
-          files: DayZ-Types-Splitter.exe
-          update_release_body: true
-
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
@@ -105,3 +95,14 @@ jobs:
             **Verify your download:**
             - Checksums: `SHA256SUMS.txt`
             - Provenance: `gh attestation verify DayZ-Types-Splitter.exe --repo ${{ github.repository }}`
+
+      # Optional: scans the exe and appends VirusTotal links to the release body.
+      # Must run AFTER the release exists, or softprops overwrites the appended links.
+      # Add a free API key as the VT_API_KEY repo secret to enable.
+      - name: VirusTotal scan
+        if: env.HAS_VT_KEY == 'true'
+        uses: crazy-max/ghaction-virustotal@v4
+        with:
+          vt_api_key: ${{ secrets.VT_API_KEY }}
+          files: DayZ-Types-Splitter.exe
+          update_release_body: true
