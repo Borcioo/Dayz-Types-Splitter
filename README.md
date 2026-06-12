@@ -1,10 +1,22 @@
 # Dayz Types Splitter script
 
-if you dont want to run exe file you can run it using commend line and python3
+Splits a DayZ `types.xml` into one file per category (`types_weapons.xml`, `types_food.xml`, ...).
+Types without a `<category>` element go to `types_other.xml`. Tested against DayZ 1.28 vanilla `types.xml`.
+
+GUI mode (pick file + output folder, press Run):
 
 ```
 python DayZ-Types-Splitter.py
 ```
+
+CLI mode (no GUI, good for scripting):
+
+```
+python DayZ-Types-Splitter.py path\to\types.xml path\to\output_dir
+```
+
+Note: to actually use the split files on a server you must register each one in
+`cfgeconomycore.xml` (`<ce folder="db"><file name="types_weapons.xml" type="types"/></ce>` etc.).
 
 # Dayz-C to Json SpawnObject convert script (only script no exe)
 
