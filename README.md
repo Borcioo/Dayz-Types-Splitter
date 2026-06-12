@@ -2,6 +2,7 @@
 
 [![CI](https://github.com/Borcioo/Dayz-Types-Splitter/actions/workflows/ci.yml/badge.svg)](https://github.com/Borcioo/Dayz-Types-Splitter/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/Borcioo/Dayz-Types-Splitter/actions/workflows/codeql.yml/badge.svg)](https://github.com/Borcioo/Dayz-Types-Splitter/actions/workflows/codeql.yml)
+[![VirusTotal](https://img.shields.io/badge/VirusTotal-scanned%20per%20release-3b5bdb?logo=virustotal&logoColor=white)](https://github.com/Borcioo/Dayz-Types-Splitter/releases/latest)
 
 Splits a DayZ `types.xml` into one file per category (`types_weapons.xml`,
 `types_food.xml`, …) and generates the `cfgeconomycore.xml` snippet that
@@ -23,9 +24,12 @@ gh attestation verify DayZ-Types-Splitter.exe --repo Borcioo/Dayz-Types-Splitter
 ```
 
 `SHA256SUMS.txt` ships with every release, and the release body links a
-VirusTotal scan. Windows SmartScreen may still warn on a fresh release
-(unsigned binary with no download history yet) — the attestation above is the
-strong proof of where the file came from.
+VirusTotal scan of the exe. Windows SmartScreen may still warn on a fresh
+release (unsigned binary with no download history yet) — the attestation above
+is the strong proof of where the file came from. A couple of ML-heuristic
+engines on VirusTotal may flag any new unsigned single-file .NET exe; that is
+expected for a fresh hash with zero reputation — check the full scan linked in
+the release, the major engines are clean.
 
 ## Usage
 
