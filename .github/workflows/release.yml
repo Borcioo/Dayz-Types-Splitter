@@ -1,0 +1,105 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            rid: win-x64
+            artifact: DayZ-Types-Splitter.exe
+          - os: ubuntu-latest
+            rid: linux-x64
+            artifact: DayZ-Types-Splitter
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Test
+        run: dotnet test TypesSplitter.sln -c Release
+
+      - name: Publish (self-contained, single file, trimmed)
+        run: >
+          dotnet publish src/TypesSplitter -c Release -r ${{ matrix.rid }}
+          --self-contained
+          -p:PublishSingleFile=true
+          -p:PublishTrimmed=true
+          -p:IncludeNativeLibrariesForSelfExtract=true
+          -o publish/${{ matrix.rid }}
+
+      - name: Package (linux)
+        if: matrix.rid == 'linux-x64'
+        run: |
+          chmod +x publish/linux-x64/DayZ-Types-Splitter
+          tar -C publish/linux-x64 -czf DayZ-Types-Splitter-linux-x64.tar.gz DayZ-Types-Splitter
+
+      - name: Package (windows)
+        if: matrix.rid == 'win-x64'
+        run: Copy-Item publish/win-x64/DayZ-Types-Splitter.exe .
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.rid }}
+          path: |
+            DayZ-Types-Splitter.exe
+            DayZ-Types-Splitter-linux-x64.tar.gz
+          if-no-files-found: error
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+
+      - name: Checksums
+        run: sha256sum DayZ-Types-Splitter.exe DayZ-Types-Splitter-linux-x64.tar.gz > SHA256SUMS.txt
+
+      # Cryptographic proof that these binaries were built from this commit by
+      # this workflow. Verify locally with:
+      #   gh attestation verify DayZ-Types-Splitter.exe --repo Borcioo/Dayz-Types-Splitter
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: |
+            DayZ-Types-Splitter.exe
+            DayZ-Types-Splitter-linux-x64.tar.gz
+
+      # Optional: scans the exe and appends VirusTotal links to the release.
+      # Add a free API key as the VT_API_KEY repo secret to enable.
+      - name: VirusTotal scan
+        if: ${{ secrets.VT_API_KEY != '' }}
+        uses: crazy-max/ghaction-virustotal@v4
+        with:
+          vt_api_key: ${{ secrets.VT_API_KEY }}
+          files: DayZ-Types-Splitter.exe
+          update_release_body: true
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: |
+            DayZ-Types-Splitter.exe
+            DayZ-Types-Splitter-linux-x64.tar.gz
+            SHA256SUMS.txt
+          body: |
+            Built by GitHub Actions from the tagged commit — no hand-uploaded binaries.
+
+            **Verify your download:**
+            - Checksums: `SHA256SUMS.txt`
+            - Provenance: `gh attestation verify DayZ-Types-Splitter.exe --repo ${{ github.repository }}`

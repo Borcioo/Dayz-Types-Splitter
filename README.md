@@ -1,52 +1,63 @@
-# Dayz Types Splitter script
+# DayZ Types Splitter
 
-Splits a DayZ `types.xml` into one file per category (`types_weapons.xml`, `types_food.xml`, ...).
-Types without a `<category>` element go to `types_other.xml`. Tested against DayZ 1.28 vanilla `types.xml`.
+[![CI](https://github.com/Borcioo/Dayz-Types-Splitter/actions/workflows/ci.yml/badge.svg)](https://github.com/Borcioo/Dayz-Types-Splitter/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/Borcioo/Dayz-Types-Splitter/actions/workflows/codeql.yml/badge.svg)](https://github.com/Borcioo/Dayz-Types-Splitter/actions/workflows/codeql.yml)
 
-GUI mode (pick file + output folder, press Run):
+Splits a DayZ `types.xml` into one file per category (`types_weapons.xml`,
+`types_food.xml`, …) and generates the `cfgeconomycore.xml` snippet that
+registers them on your server. Types without a `<category>` element land in
+`types_other.xml`.
 
-```
-python DayZ-Types-Splitter.py
-```
+![screenshot](docs/screenshot.png)
 
-CLI mode (no GUI, good for scripting):
+## Download
 
-```
-python DayZ-Types-Splitter.py path\to\types.xml path\to\output_dir
-```
+Grab the latest exe from [Releases](https://github.com/Borcioo/Dayz-Types-Splitter/releases) —
+no Python, no .NET install, nothing else needed. A Linux build is there too.
 
-Note: to actually use the split files on a server you must register each one in
-`cfgeconomycore.xml` (`<ce folder="db"><file name="types_weapons.xml" type="types"/></ce>` etc.).
-
-# Dayz-C to Json SpawnObject convert script (only script no exe)
-
-https://www.youtube.com/watch?v=PsFPHqpMoMM
-
-python 3 necessary
-
-if you want to convert c to json clone repo and unpack it
-
-open DayZ-C_to_Json_Spawn_Points folder
-
-in folder: 
-```
-files_to_convert(folder)
-```
-
-go files with extension .c (see example file in folder, you can conver multiply files at once)
-
-next run
+**Is this safe?** Every release is built by GitHub Actions straight from the
+tagged source commit — no hand-uploaded binaries. You can verify it yourself:
 
 ```
-python C_to_Json_Spawn_Points.py
+gh attestation verify DayZ-Types-Splitter.exe --repo Borcioo/Dayz-Types-Splitter
 ```
 
-and that's it, in the json folder will be all the files you have converted ^^
+`SHA256SUMS.txt` ships with every release, and the release body links a
+VirusTotal scan. Windows SmartScreen may still warn on a fresh release
+(unsigned binary with no download history yet) — the attestation above is the
+strong proof of where the file came from.
 
-you can now copy json to server files and add them to cfggameplay
+## Usage
+
+**GUI** — run the exe, drop a `types.xml` anywhere in the window (or click
+*Open*), tick the categories you want, *Split*. Then *Copy cfgeconomycore.xml
+snippet* and paste it into your mission's `cfgeconomycore.xml`.
+
+**CLI** — for scripts and server pipelines:
 
 ```
-    "objectSpawnersArr": [
-      "xxx.json",
-    ],
+DayZ-Types-Splitter.exe path\to\types.xml path\to\output_dir
+```
+
+Splits all categories and prints the cfgeconomycore snippet.
+
+## Building from source
+
+```
+dotnet build TypesSplitter.sln
+dotnet test
+dotnet run --project src/TypesSplitter
+```
+
+Stack: .NET 8, [Avalonia](https://avaloniaui.net/) (Fluent dark), CommunityToolkit.Mvvm.
+Core split logic lives in `src/TypesSplitter.Core` (no UI dependencies), unit-tested
+in `tests/TypesSplitter.Tests`.
+
+## Legacy
+
+The original Python/tkinter version and the `SpawnObject` `.c` → `.json`
+converter live in [`legacy/`](legacy/). The converter still works:
+
+```
+python legacy/DayZ-C_to_Json_Spawn_Points/C_to_Json_Spawn_Points.py
 ```

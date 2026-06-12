@@ -129,3 +129,10 @@ dmypy.json
 .pyre/
 
 _test_out/
+
+# .NET
+bin/
+obj/
+publish/
+_test_out*/
+*.user
