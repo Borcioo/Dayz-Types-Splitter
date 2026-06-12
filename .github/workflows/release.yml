@@ -115,6 +115,6 @@ jobs:
         run: |
           url="${ANALYSIS#*=}"
           {
-            gh release view "$GITHUB_REF_NAME" --json body --jq .body
+            gh release view "$GITHUB_REF_NAME" -R "$GITHUB_REPOSITORY" --json body --jq .body
             printf '\n**VirusTotal scan:** %s\n' "$url"
-          } | gh release edit "$GITHUB_REF_NAME" --notes-file -
+          } | gh release edit "$GITHUB_REF_NAME" -R "$GITHUB_REPOSITORY" --notes-file -
